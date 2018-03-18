@@ -1,0 +1,52 @@
+user1	1:00	u1	1.5
+user2	2:00	u2	0.5
+user3	3:00	u3	0.1
+user4	4:00	u1	1.4
+user5	5:00	u4	1.3
+user6	6:00	u4	1.9
+user7	7:00	u5	2.4
+user8	8:00	u1	0.1
+user9	9:00	u6	0.6
+user10	10:00	u1	0.5
+user10	10:00	u1	0.8
+user10	10:00	u2	0.5
+user10	10:00	u1	0.5
+user10	10:00	u1	0.5
+user10	10:00	u3	0.5
+user1	10:00	u1	0.5
+user1	10:00	u1	0.5
+user2	10:00	u2	0.5
+user2	10:00	u1	0.5
+user3	10:00	u1	0.5
+user10	10:00	u2	4.5
+user10	10:00	u6	6.5
+user10	10:00	u9	0.5
+user11	1:00	u2	0.2
+user12	3:00	u4	0.9
+user13	4:00	u2	9.1
+user14	6:00	u1	6.1
+user15	5:00	u5	5.1
+
+
+用Hadoop分析海量日志文件，每行日志记录了如下数据：
+TableName(表名)，Time(时间)，User(用户)，TimeSpan(时间开销)
+
+要求编写MapReduce程序算出高峰时间段（如上午10点）哪张表被访问的最频繁，以及这段时间访问这张表最多的用户，以及这个用户的总时间开销。
+
+思路：
+	1. map1
+		输出的key==表名
+		value == 其它字段
+	2.reduce1
+		遍历values并计数，访问tVisitCount，用一个map1，key是用户名，value是访问次数，再用一个map2，key是用户名，value是总时间开销
+		
+		找出map1中value值最大的key，再根据这个key找出map2中value。
+				访问这张表最多的用户	总时间
+		把表名，表的访问次数，访问这张表最多的用户名，这个用户的总开销时间
+	3.map2
+		1.实现一个pojo类，用户存储表的访问次数，重点是实现比较的方法，倒叙排序
+		2.把访问次数作为输出key，其它字段作为value
+	4.reduce2
+		解决只输出key最大的表，也就是排序后的第一张。int tcountMax = Integer.MIN_VALUE;
+		
+
